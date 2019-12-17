@@ -257,7 +257,24 @@ spawn_pane(struct spawn_context *sc, char **cause)
 			close(sc->wp0->fd);
 		}
 		window_pane_reset_mode_all(sc->wp0);
-		screen_reinit(&sc->wp0->base);
+		//screen_reinit(&sc->wp0->base);
+		{
+		struct screen_write_ctx	 ctx;
+		struct grid_cell	 gc;
+		time_t			 t;
+		char			 tim[26];
+		screen_write_start_pane(&ctx, sc->wp0, &sc->wp0->base);
+		screen_write_cursormove(&ctx, 0, ctx.s->cy+1, 0);
+		screen_write_linefeed(&ctx, 1, 8);
+		memcpy(&gc, &grid_default_cell, sizeof gc);
+		time(&t);
+		ctime_r(&t, tim);
+		screen_write_nputs(&ctx, -1, &gc, "--Pane started (%s)--", tim);
+		screen_write_cursormove(&ctx, 0, ctx.s->cy+1, 0);
+		screen_write_linefeed(&ctx, 1, 8);
+		screen_write_stop(&ctx);
+		sc->wp0->flags |= PANE_REDRAW;
+		}
 		input_free(sc->wp0->ictx);
 		sc->wp0->ictx = NULL;
 		new_wp = sc->wp0;
