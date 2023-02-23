@@ -360,7 +360,7 @@ server_destroy_pane(struct window_pane *wp, int notify)
 
 			screen_write_stop(&ctx);
 		}
-		wp->base.mode &= ~MODE_CURSOR;
+//		wp->base.mode &= ~MODE_CURSOR;
 
 		wp->flags |= PANE_REDRAW;
 		return;
