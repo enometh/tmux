@@ -374,6 +374,11 @@ spawn_pane(struct spawn_context *sc, char **cause)
 	sigfillset(&set);
 	sigprocmask(SIG_BLOCK, &set, &oldset);
 
+	if (~sc->flags & SPAWN_RESPAWN) {
+		new_wp->base.mode |= MODE_CURSOR;
+		new_wp->flags |= PANE_REDRAW;
+	}
+
 	/* If the command is empty, don't fork a child process. */
 	if (sc->flags & SPAWN_EMPTY) {
 		new_wp->flags |= PANE_EMPTY;
