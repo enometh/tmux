@@ -304,7 +304,6 @@ struct window_copy_mode_data {
 	int		 timeout;	/* search has timed out */
 #define WINDOW_COPY_SEARCH_TIMEOUT 10000
 #define WINDOW_COPY_SEARCH_ALL_TIMEOUT 200
-#define WINDOW_COPY_SEARCH_MAX_LINE 2000
 
 	int			 jumptype;
 	struct utf8_data	*jumpchar;
@@ -3382,9 +3381,7 @@ window_copy_search_lr_regex(struct grid *gd, u_int *ppx, u_int *psx, u_int py,
 	len = gd->sx - first;
 	endline = gd->hsize + gd->sy - 1;
 	pywrap = py;
-	while (buf != NULL &&
-	    pywrap <= endline &&
-	    len < WINDOW_COPY_SEARCH_MAX_LINE) {
+	while (buf != NULL && pywrap <= endline) {
 		gl = grid_get_line(gd, pywrap);
 		if (~gl->flags & GRID_LINE_WRAPPED)
 			break;
@@ -3441,9 +3438,7 @@ window_copy_search_rl_regex(struct grid *gd, u_int *ppx, u_int *psx, u_int py,
 	len = gd->sx - first;
 	endline = gd->hsize + gd->sy - 1;
 	pywrap = py;
-	while (buf != NULL &&
-	    pywrap <= endline &&
-	    len < WINDOW_COPY_SEARCH_MAX_LINE) {
+	while (buf != NULL && (pywrap <= endline)) {
 		gl = grid_get_line(gd, pywrap);
 		if (~gl->flags & GRID_LINE_WRAPPED)
 			break;
