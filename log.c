@@ -164,3 +164,6 @@ fatalx(const char *msg, ...)
 
 	exit(1);
 }
+
+extern int log_active_p (void);
+int log_active_p () { return log_file != NULL; }
