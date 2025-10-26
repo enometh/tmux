@@ -30,6 +30,8 @@
 #include <string.h>
 #include <unistd.h>
 
+void restore_orig_core_limit(void);
+
 #include "tmux.h"
 
 static struct tmuxproc	*client_proc;
@@ -510,6 +512,8 @@ client_exec(const char *shell, const char *shellcmd)
 	setblocking(STDOUT_FILENO, 1);
 	setblocking(STDERR_FILENO, 1);
 	closefrom(STDERR_FILENO + 1);
+
+	restore_orig_core_limit();
 
 	execl(shell, argv0, "-c", shellcmd, (char *) NULL);
 	fatal("execl failed");

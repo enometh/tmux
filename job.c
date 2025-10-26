@@ -27,6 +27,8 @@
 #include <string.h>
 #include <unistd.h>
 
+extern void restore_orig_core_limit(void);
+
 #include "tmux.h"
 
 /*
@@ -179,6 +181,7 @@ job_run(const char *cmd, int argc, char **argv, struct environ *e,
 		}
 		closefrom(STDERR_FILENO + 1);
 
+		restore_orig_core_limit();
 		if (cmd != NULL) {
 			if (flags & JOB_DEFAULTSHELL)
 				setenv("SHELL", shell, 1);

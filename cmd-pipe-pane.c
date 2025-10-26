@@ -27,6 +27,8 @@
 #include <time.h>
 #include <unistd.h>
 
+void restore_orig_core_limit(void);
+
 #include "tmux.h"
 
 /*
@@ -156,6 +158,8 @@ cmd_pipe_pane_exec(struct cmd *self, struct cmdq_item *item)
 		if (dup2(null_fd, STDERR_FILENO) == -1)
 			_exit(1);
 		closefrom(STDERR_FILENO + 1);
+
+		restore_orig_core_limit();
 
 		execl(_PATH_BSHELL, "sh", "-c", cmd, (char *) NULL);
 		_exit(1);

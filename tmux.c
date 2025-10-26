@@ -19,6 +19,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
+#include <sys/resource.h>
+#include <assert.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -30,6 +32,11 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+// to reset core limit for spawned processes while specialcasing tmux
+static struct rlimit orig_core_limit = { 0, 0 };
+void init_orig_core_limit() { assert(getrlimit( RLIMIT_CORE, &orig_core_limit) == 0 ); }
+void restore_orig_core_limit() { assert(setrlimit(RLIMIT_CORE, &orig_core_limit) == 0 ); }
 
 #include "tmux.h"
 
@@ -356,6 +363,10 @@ main(int argc, char **argv)
 	uint64_t				 flags = 0;
 	const struct options_table_entry	*oe;
 	u_int					 i;
+
+	init_orig_core_limit();
+	struct rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
+	assert( setrlimit( RLIMIT_CORE, &core_limit ) == 0 ); // enable core dumps for tmux process
 
 	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
 	    setlocale(LC_CTYPE, "C.UTF-8") == NULL) {

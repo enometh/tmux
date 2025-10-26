@@ -24,6 +24,8 @@
 #include <string.h>
 #include <unistd.h>
 
+extern void restore_orig_core_limit(void);
+
 #include "tmux.h"
 
 /*
@@ -456,6 +458,8 @@ spawn_pane(struct spawn_context *sc, char **cause)
 	sigprocmask(SIG_SETMASK, &oldset, NULL);
 	log_close();
 	environ_push(child);
+
+	restore_orig_core_limit();
 
 	/*
 	 * If given multiple arguments, use execvp(). Copy the arguments to
